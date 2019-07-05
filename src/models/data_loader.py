@@ -5,7 +5,7 @@ import random
 import torch
 
 from others.logging import logger
-
+import pysnooper
 
 
 class Batch(object):
@@ -221,7 +221,8 @@ class DataIterator(object):
             if (self.shuffle):
                 random.shuffle(p_batch)
             for b in p_batch:
-                yield b
+                if b:
+                    yield b
 
     def __iter__(self):
         while True:
