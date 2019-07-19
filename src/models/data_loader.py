@@ -4,8 +4,7 @@ import random
 
 import torch
 
-from others.logging import logger
-import pysnooper
+from .others.logging import logger
 
 
 class Batch(object):
@@ -121,7 +120,7 @@ class Dataloader(object):
         self.device = device
         self.shuffle = shuffle
         self.is_test = is_test
-        self.cur_iter = self._next_dataset_iterator(datasets)
+        self.cur_iter = self._next_dataset_iterator(datasets)   
 
         assert self.cur_iter is not None
 
