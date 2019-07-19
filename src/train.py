@@ -189,6 +189,29 @@ def validate(args,  device_id, pt, step):
     stats = trainer.validate(valid_iter, step)
     return stats.xent()
 
+
+def save_state_dict(args,  device_id):
+    device = "cpu" if args.visible_gpus == '-1' else "cuda"
+    ckpt = "cnndm_bertsum_classifier_best.pt"
+
+    logger.info('Loading checkpoint from %s' % ckpt)
+    checkpoint = torch.load(ckpt, map_location=lambda storage, loc: storage)
+    opt = vars(checkpoint['opt'])
+    for k in opt.keys():
+        if (k in model_flags):
+            setattr(args, k, opt[k])
+    print(args)
+
+    config = BertConfig.from_json_file(args.bert_config_path)
+    model = Summarizer(args, device, load_pretrained_bert=False, bert_config = config)
+    model.load_cp(checkpoint)
+    model.eval()
+
+    # save state_dict
+    torch.save(model.state_dict(), "weights.pt")
+
+
+
 def test(args, device_id, pt, step):
 
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
@@ -334,7 +357,9 @@ if __name__ == '__main__':
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     device_id = 0 if device == "cuda" else -1
 
-    if(args.world_size>1):
+    if (args.mode == 'save_state_dict'):
+        save_state_dict(args, device_id)
+    elif(args.world_size>1):
         multi_main(args)
     elif (args.mode == 'train'):
         train(args, device_id)
