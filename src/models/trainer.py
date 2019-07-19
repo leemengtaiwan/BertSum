@@ -6,10 +6,10 @@ from tensorboardX import SummaryWriter
 
 import distributed
 # import onmt
-from models.reporter import ReportMgr
-from models.stats import Statistics
-from others.logging import logger
-from others.utils import test_rouge, rouge_results_to_str
+from .models.reporter import ReportMgr
+from .models.stats import Statistics
+from .models.others.logging import logger
+from .models.others.utils import test_rouge, rouge_results_to_str
 
 
 def _tally_parameters(model):
