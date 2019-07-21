@@ -12,7 +12,7 @@ import signal
 import time
 
 import torch
-from pytorch_transformers import BertConfig
+from pytorch_pretrained_bert import BertConfig
 
 import distributed
 from models import data_loader, model_builder
