@@ -94,6 +94,8 @@ class Summarizer(nn.Module):
 
         top_vec = self.bert(x, segs, mask)
         sents_vec = top_vec[torch.arange(top_vec.size(0)).unsqueeze(1), clss]
-        sents_vec = sents_vec * mask_cls[:, :, None].float()
+        print("mask:", mask)
+        print("mask_cls:", mask_cls)
+        sents_vec = sents_vec * mask[:, :, None].float()
         sent_scores = self.encoder(sents_vec, mask_cls).squeeze(-1)
         return sent_scores, mask_cls
