@@ -1,6 +1,7 @@
 
 import torch
 import torch.nn as nn
+import torchsnooper
 from pytorch_transformers import BertModel, BertConfig
 from torch.nn.init import xavier_uniform_
 
@@ -88,6 +89,7 @@ class Summarizer(nn.Module):
     def load_cp(self, pt):
         self.load_state_dict(pt['model'], strict=True)
 
+    @torchsnooper.snoop()
     def forward(self, x, segs, clss, mask, mask_cls, sentence_range=None):
 
         top_vec = self.bert(x, segs, mask)
