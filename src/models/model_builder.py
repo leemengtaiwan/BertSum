@@ -89,11 +89,16 @@ class Summarizer(nn.Module):
     def load_cp(self, pt):
         self.load_state_dict(pt['model'], strict=True)
 
-    @torchsnooper.snoop()
     def forward(self, x, segs, clss, mask, mask_cls, sentence_range=None):
+        # `seq_len` default setting: 512
+        # x.shape == (batch_size, seq_len)
+        # segs.shape == (batch_size, seq_len)
+        # clss.shape == (batch_size, num_sentences)
+        # mask.shape == (batch_size, seq_len)
+        # mask_cls.shape == (batch_size, num_sentences)
 
-        top_vec = self.bert(x, segs, mask)
-        sents_vec = top_vec[torch.arange(top_vec.size(0)).unsqueeze(1), clss]
-        sents_vec = sents_vec * mask_cls[:, :, None].float()
-        sent_scores = self.encoder(sents_vec, mask_cls).squeeze(-1)
+        top_vec = self.bert(x, segs, mask)  # (batch_size, seq_len, hidden_units)
+        sents_vec = top_vec[torch.arange(top_vec.size(0)).unsqueeze(1), clss]  # (bsize, num_sentences, hidden_units)
+        sents_vec = sents_vec * mask_cls[:, :, None].float()  # (batch_size, num_sentences, hidden_units)
+        sent_scores = self.encoder(sents_vec, mask_cls).squeeze(-1)  # (batch_size, num_sentences)
         return sent_scores, mask_cls
